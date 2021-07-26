@@ -1,0 +1,61 @@
+pipeline {
+    agent {
+        label 'Linux_Node'
+    }
+    stages {
+        stage('Compile'){
+            steps {
+                echo "Compiled Succesfully!";
+            }
+        }
+        stage('Parallel JUnit'){
+            parallel {
+                stage('Test on Windows'){
+                    agent {
+                        label "Linux_Node"
+                    }
+                    steps {
+                        echo "JUnit Passed Successfully! on Linux Agent!";
+                    }
+                }
+                stage('Test on Linux'){
+                    agent {
+                        label "master"
+                    }
+                    steps {
+                        echo "JUnit Passed Successfully on master!";
+                    }
+                }
+             
+            }
+        }
+        stage('Quality-Gate'){
+            steps {
+                echo "SonarQube Gate passed succesfully!";
+            }
+        }
+        stage('Deploy'){
+            steps {
+                echo "Pass!";
+                }
+        }
+    }
+    post {
+        always {
+            echo 'This will always run'
+        }
+        success {
+            echo 'This will only run on success'
+        }
+        failure {
+            echo 'This will run only if failed'
+        }
+        unstable {
+            echo 'This will run only when marked as unstable'
+        }
+        changed {
+            echo 'This will run only if changed'
+        }
+    }
+    
+}
